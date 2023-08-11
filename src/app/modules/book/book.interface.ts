@@ -4,9 +4,12 @@ import { IReview } from "../review/review.interface";
 export type IBook = {
   _id?: Types.ObjectId;
   title: string;
-  author: string;
+  author: {
+    name: string;
+    email: string;
+  };
   genre: string;
-  publicationDate: string;
+  publicationDate: Date;
   imageUrl: string;
   reviews?: Types.ObjectId | IReview;
   rating?: number;

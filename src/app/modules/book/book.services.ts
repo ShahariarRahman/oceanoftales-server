@@ -5,6 +5,8 @@ import { IPaginationOptions } from "../../../interfaces/pagination";
 import { bookSearchableFields } from "./book.constant";
 import { IBook, IBookFilters } from "./book.interface";
 import { Book } from "./book.model";
+import ApiError from "../../../errors/ApiError";
+import httpStatus from "http-status";
 
 const getAllBooks = async (
   filters: IBookFilters,
@@ -30,23 +32,35 @@ const getAllBooks = async (
   if (Object.keys(filtersData).length) {
     andConditions.push({
       $and: Object.entries(filtersData).map(([field, value]) => {
-        // if (field === "publicationDate") {
-        //   const dateRange = value.split(",");
-        //   const startDate = new Date(dateRange[0] + " 00:00:00");
-        //   const endDate = new Date(dateRange[1] + " 23:59:59");
-
-        //   // Set startDate to January 1st
-        //   startDate.setMonth(0);
-        //   startDate.setDate(1);
-
-        //   // Set endDate to December 31st
-        //   endDate.setMonth(11);
-        //   endDate.setDate(31);
-
-        //   return {
-        //     publicationDate: { $gte: startDate, $lte: endDate },
-        //   };
-        // }
+        if (field === "publicationDate") {
+          const [from, to] = value.split(",").map(Number);
+          if (!isNaN(from) && !isNaN(to)) {
+            const fromYear = Math.min(from, to);
+            const toYear = Math.max(from, to);
+            const fromDate = new Date(fromYear, 0, 1);
+            const toDate = new Date(toYear, 11, 31);
+            return {
+              [field]: {
+                $gte: fromDate,
+                $lte: toDate,
+              },
+            };
+          } else if (!isNaN(from)) {
+            const toDate = new Date(from, 11, 31);
+            return {
+              [field]: {
+                $lte: toDate,
+              },
+            };
+          } else if (!isNaN(to)) {
+            const fromDate = new Date(to, 0, 1);
+            return {
+              [field]: {
+                $gte: fromDate,
+              },
+            };
+          }
+        }
         if (field === "genre" && value.includes(",")) {
           return {
             [field]: { $in: value.split(",") },
@@ -60,23 +74,6 @@ const getAllBooks = async (
     });
   }
 
-  // if (Object.keys(filtersData).length) {
-  //   andConditions.push({
-  //     $and: Object.entries(filtersData).map(([field, value]) => {
-  //       if (field === "genre" && value.includes(",")) {
-  //         return {
-  //           [field]: { $in: value.split(",") },
-  //         };
-  //       } else {
-  //         return {
-  //           [field]: value,
-  //         };
-  //       }
-  //     }),
-  //   });
-  // }
-
-  console.log(andConditions);
   const sortConditions: { [key: string]: SortOrder } = {};
 
   if (sortBy && sortOrder) {
@@ -102,6 +99,23 @@ const getAllBooks = async (
   };
 };
 
+const getSingleBook = async (id: string): Promise<IBook | null> => {
+  const result = await Book.findOne({ _id: id }).orFail(
+    new ApiError(httpStatus.NOT_FOUND, "Book Not Found")
+  );
+  return result;
+};
+
+const createBook = async (payload: IBook): Promise<IBook> => {
+  const book = await Book.create(payload);
+  if (!book) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Failed to publish book");
+  }
+  return book;
+};
+
 export const BookService = {
   getAllBooks,
+  getSingleBook,
+  createBook,
 };

@@ -6,4 +6,4 @@ export const bookFilterableFields: (keyof IBookFilters)[] = [
   "publicationDate",
 ];
 
-export const bookSearchableFields = ["title", "author", "genre"];
+export const bookSearchableFields = ["title", "author.name", "genre"];
