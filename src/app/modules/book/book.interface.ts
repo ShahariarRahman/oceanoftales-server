@@ -11,8 +11,8 @@ export type IBook = {
   genre: string;
   publicationDate: Date;
   imageUrl: string;
-  reviews?: Types.ObjectId | IReview;
   rating?: number;
+  reviews?: IReview[];
 };
 
 export type BookModel = Model<IBook, Record<string, unknown>>;

@@ -114,8 +114,34 @@ const createBook = async (payload: IBook): Promise<IBook> => {
   return book;
 };
 
+const updateBook = async (id: string, payload: IBook): Promise<IBook> => {
+  await Book.exists({ _id: id }).orFail(
+    new ApiError(httpStatus.NOT_FOUND, "Book Not Found")
+  );
+
+  const result = await Book.findByIdAndUpdate(id, payload, {
+    new: true,
+  }).orFail(new ApiError(httpStatus.NOT_FOUND, "Failed to update book"));
+
+  return result;
+};
+
+const deleteBook = async (id: string): Promise<IBook> => {
+  await Book.exists({ _id: id }).orFail(
+    new ApiError(httpStatus.NOT_FOUND, "Book Not Found")
+  );
+
+  const result = await Book.findByIdAndDelete(id).orFail(
+    new ApiError(httpStatus.NOT_FOUND, "Failed to delete book")
+  );
+
+  return result;
+};
+
 export const BookService = {
   getAllBooks,
   getSingleBook,
   createBook,
+  updateBook,
+  deleteBook,
 };

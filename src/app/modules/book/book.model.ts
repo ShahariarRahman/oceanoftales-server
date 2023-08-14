@@ -31,12 +31,26 @@ const bookSchema = new Schema<IBook, BookModel>(
       type: String,
       require: true,
     },
-    reviews: {
-      type: Schema.Types.ObjectId,
-      ref: "reviews",
-    },
     rating: {
       type: Number,
+    },
+    reviews: {
+      type: [
+        {
+          user: {
+            type: String,
+            required: true,
+          },
+          rating: {
+            type: Number,
+            required: true,
+          },
+          comment: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
     },
   },
   {
