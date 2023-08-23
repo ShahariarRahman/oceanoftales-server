@@ -8,16 +8,16 @@ router.get("/:id", BookController.getSingleBook);
 
 router.delete("/:id", BookController.deleteBook);
 
-router.post(
-  "/",
-  validateRequest(BookValidation.createBookZodSchema),
-  BookController.createBook
-);
-
 router.patch(
   "/:id",
   validateRequest(BookValidation.createBookZodSchema),
   BookController.updateBook
+);
+
+router.post(
+  "/",
+  validateRequest(BookValidation.createBookZodSchema),
+  BookController.createBook
 );
 
 router.get("/", BookController.getAllBooks);
