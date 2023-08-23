@@ -51,7 +51,9 @@ const createAccount = async (
 };
 
 const loginAccount = async (payload: IUserAuth): Promise<IUserAuthResponse> => {
-  const isUserExist = await UserAuth.findOne({ email: payload.email });
+  const isUserExist = await UserAuth.findOne({ email: payload.email }).select(
+    "+password"
+  );
 
   if (!isUserExist) {
     throw new ApiError(
@@ -60,10 +62,12 @@ const loginAccount = async (payload: IUserAuth): Promise<IUserAuthResponse> => {
     );
   }
 
-  if (
-    isUserExist.password &&
-    !(await UserAuth.isPasswordMatched(payload.password, isUserExist.password))
-  ) {
+  const isPasswordMatched = await UserAuth.isPasswordMatched(
+    payload.password,
+    isUserExist.password
+  );
+
+  if (!isPasswordMatched) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Password is incorrect");
   }
 

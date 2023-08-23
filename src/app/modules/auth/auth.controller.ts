@@ -12,7 +12,7 @@ const createAccount = catchAsync(async (req: Request, res: Response) => {
   const { refreshToken, ...rest } = result;
 
   // set refresh token into cookie
-  res.cookie("refreshToken", refreshToken, cookieOptions(req));
+  res.cookie("refreshToken", refreshToken, cookieOptions());
 
   sendResponse<IUserAuthResponse>(res, {
     statusCode: httpStatus.OK,
@@ -28,7 +28,7 @@ const loginAccount = catchAsync(async (req: Request, res: Response) => {
   const { refreshToken, ...rest } = result;
 
   // set refresh token into cookie
-  res.cookie("refreshToken", refreshToken, cookieOptions(req));
+  res.cookie("refreshToken", refreshToken, cookieOptions());
 
   sendResponse<IUserAuthResponse>(res, {
     statusCode: httpStatus.OK,
@@ -40,7 +40,7 @@ const loginAccount = catchAsync(async (req: Request, res: Response) => {
 
 const logoutAccount = catchAsync(async (req: Request, res: Response) => {
   // clear refresh token from cookie
-  res.clearCookie("refreshToken");
+  res.clearCookie("refreshToken", cookieOptions());
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -67,7 +67,7 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.refreshToken(refreshToken);
 
   // set refresh token into cookie
-  res.cookie("refreshToken", refreshToken, cookieOptions(req));
+  res.cookie("refreshToken", refreshToken, cookieOptions());
 
   sendResponse<IRefreshTokenResponse>(res, {
     statusCode: httpStatus.OK,

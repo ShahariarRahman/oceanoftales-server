@@ -34,7 +34,7 @@ const getAllBooks = async (
       $and: Object.entries(filtersData).map(([field, value]) => {
         if (field === "publicationDate") {
           const [from, to] = value.split(",").map(Number);
-          if (!isNaN(from) && !isNaN(to)) {
+          if (from && to) {
             const fromYear = Math.min(from, to);
             const toYear = Math.max(from, to);
             const fromDate = new Date(fromYear, 0, 1);
@@ -45,14 +45,14 @@ const getAllBooks = async (
                 $lte: toDate,
               },
             };
-          } else if (!isNaN(from)) {
+          } else if (from) {
             const toDate = new Date(from, 11, 31);
             return {
               [field]: {
                 $lte: toDate,
               },
             };
-          } else if (!isNaN(to)) {
+          } else if (to) {
             const fromDate = new Date(to, 0, 1);
             return {
               [field]: {

@@ -1,13 +1,14 @@
-import { Request } from "express";
+import { CookieOptions } from "express";
+import config from "../../../config";
 
-export const cookieOptions = (req: Request) => {
+export const cookieOptions = (): CookieOptions => {
   const expirationDate = new Date();
   expirationDate.setDate(expirationDate.getDate() + 10);
 
   return {
-    secure: req.secure || req.headers["x-forwarded-proto"] === "https", // Detect if the request is secure (HTTPS)
+    secure: config.env === "production",
     httpOnly: true,
-    sameSite: true,
+    sameSite: false,
     expires: expirationDate,
   };
 };

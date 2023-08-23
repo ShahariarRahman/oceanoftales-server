@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 const app: Application = express();
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["https://oceanoftales.web.app", "http://localhost:3000"],
   credentials: true,
   optionsSuccessStatus: 200,
 };
